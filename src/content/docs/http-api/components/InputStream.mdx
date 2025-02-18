@@ -2,25 +2,57 @@
 title: InputStream
 ---
 import CollapsibleDetails from '../../../../components/CollapsibleDetails.astro';
-import { Code } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
 
 A component for displaying registered media inputs.
 
-:::note
-To use this component, you need to first register the stream with matching `input_id` using [`register input`](/http-api/routes#register-input) request.
-:::
+<Aside> To use this component, you need to first register the stream with matching `input_id` using [`register input`](/http-api/routes#register-input) request. </Aside>
 
-## Reference
+## Example
 
-{/*TODO example*/}
+To begin, you need to register an input stream. The example below shows how to register an RTP input stream on port `8002` using `ffmpeg_h264` as the decoder.
+
+<CollapsibleDetails summaryTitle='Register RTP input' open>
+```http
+POST: /api/input/example_input/register
+Content-Type: application/json
+
+{
+  "type": "rtp_stream",
+  "port": 8002,
+  "video": {
+    "decoder": "ffmpeg_h264"
+  }
+}
+```
+</CollapsibleDetails>
+
+Once this request is sent, Smelter will start listening for an RTP stream on port 8002. Now when the input stream is registered, we can use it as a source for an output stream.
+
+<CollapsibleDetails summaryTitle='Update output' open>
+```http ins={7-8}
+POST: /api/output/example_output/update
+Content-Type: application/json
+
+{
+  "video": {
+    "root": {
+      "type": "input_stream",
+      "input_id": "example_input"
+    }
+  }
+}
+```
+</CollapsibleDetails>
+
 
 <CollapsibleDetails summaryTitle='Type definitions'>
-<Code code={`
-  type InputStream = {
-    id?: string;
-    input_id: string;
-  }
-`} lang='tsx' />
+```tsx
+type InputStream = {
+  id?: string;
+  input_id: string;
+}
+```
 </CollapsibleDetails>
 
 ## Properties
