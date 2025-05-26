@@ -8,13 +8,14 @@ import tailwind from "@astrojs/tailwind";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import starlightLinksValidator from "starlight-links-validator";
+import starlightVersions from "starlight-versions";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 
 import sitemap from "@astrojs/sitemap";
 
-import vercel from "@astrojs/vercel";
-
 import react from "@astrojs/react";
+
+import vercel from "@astrojs/vercel";
 
 const require = createRequire(import.meta.url);
 
@@ -30,10 +31,10 @@ export default defineConfig({
     "/http-api": "/http-api/overview",
     "/http-api/renderers": "/http-api/renderers/overview",
   },
-  experimental: {
-    svg: true,
-  },
+
   prefetch: true,
+  output: "server",
+
   vite: {
     plugins: [
       viteStaticCopy({
@@ -53,10 +54,33 @@ export default defineConfig({
       include: ["@swmansion/smelter-web-wasm > pino"],
     },
   },
+
   integrations: [
     starlight({
       title: "Smelter",
-      plugins: process.env.ENABLE_LINK_CHECKER ? [starlightLinksValidator()] : [],
+      prerender: false,
+      plugins: process.env.ENABLE_LINK_CHECKER
+        ? [
+            starlightLinksValidator(),
+            starlightVersions({
+              versions: [
+                {
+                  slug: "ts-sdk/1.0",
+                  label: "ts-sdk v1.0",
+                },
+              ],
+            }),
+          ]
+        : [
+            starlightVersions({
+              versions: [
+                {
+                  slug: "ts-sdk/1.0",
+                  label: "ts-sdk v1.0",
+                },
+              ],
+            }),
+          ],
       description:
         "Low-latency video compositing tool with seamless developer experience. Use it for live streaming, broadcasting, video conferencing and more.",
       social: {
@@ -246,5 +270,9 @@ export default defineConfig({
     ],
   },
 
-  adapter: vercel(),
+  adapter: vercel({
+    webAnalytics: {
+      enabled: true,
+    },
+  }),
 });
