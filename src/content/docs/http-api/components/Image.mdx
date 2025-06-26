@@ -65,10 +65,11 @@ Content-Type: application/json
 type Image = {
   id?: string;
   image_id: string;
+  width?: usize;
+  height?: usize;
 }
 ```
 </CollapsibleDetails>
-
 
 ## Properties
 
@@ -83,3 +84,19 @@ ID of a component.
 ID of an image. It identifies an image registered using a [register image](/http-api/routes#register-image) request.
 
 - **Type**: `string`
+
+---
+
+### width
+Width of the texture onto which the image will be rendered. If `height` is not explicitly provided, the image will automatically adjust its height to maintain its original aspect ratio relative to the width.
+
+- **Type**: `usize`
+
+---
+
+### height
+Height of the texture onto which the image will be rendered. If `width` is not explicitly provided, the image will automatically adjust its height to maintain its original aspect ratio relative to the height.
+
+- **Type**: `usize`
+
+
